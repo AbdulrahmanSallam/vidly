@@ -4,15 +4,23 @@ import Movie from "./movie";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate.js";
 import { getGenres } from "../services/fakeGenreService.js";
+import ListGroup from "./common/listGroup.jsx";
 
 class Movies extends Component {
   state = {
-    movies: getMovies(),
-    genres: getGenres(),
-    genre: "",
+    movies: [],
+    genres: [],
+    selectedGenre: {},
     currentPage: 1,
-    pageSize: 2,
+    pageSize: 3,
   };
+
+  componentDidMount() {
+    const defaultGenre = { _id: "", name: "All genres" };
+    const genres = [defaultGenre, ...getGenres()];
+
+    this.setState({ movies: getMovies(), genres, selectedGenre: defaultGenre });
+  }
 
   handleDelete = id => {
     const movies = this.state.movies.filter(m => m._id != id);
@@ -33,17 +41,22 @@ class Movies extends Component {
     this.setState({ currentPage: page });
   };
 
-  handleGenreChange = genre => {
-    this.setState({ genre });
+  handleGenreChange = selectedGenre => {
+    this.setState({ selectedGenre, currentPage: 1 });
   };
 
   render() {
-    const { pageSize, currentPage, movies: allMovies } = this.state;
-    const { genres, genre } = this.state;
+    const {
+      pageSize,
+      currentPage,
+      movies: allMovies,
+      selectedGenre,
+    } = this.state;
 
-    const filteredMovies = genre
-      ? allMovies.filter(movie => movie.genre.name === genre)
-      : allMovies;
+    const filteredMovies =
+      selectedGenre && selectedGenre._id
+        ? allMovies.filter(movie => movie.genre._id === selectedGenre._id)
+        : allMovies;
 
     const itemsCount = filteredMovies.length;
 
@@ -53,23 +66,10 @@ class Movies extends Component {
       <section className="container pt-4">
         <div className="row">
           <div className="col-2">
-            <div className="list-group">
-              <a
-                onClick={() => this.handleGenreChange("")}
-                className="list-group-item list-group-item-action active"
-                aria-current="true">
-                All Genres
-              </a>
-              {genres.map(genre => (
-                <a
-                  key={genre._id}
-                  onClick={() => this.handleGenreChange(genre.name)}
-                  className="list-group-item list-group-item-action"
-                  aria-current="true">
-                  {genre.name}
-                </a>
-              ))}
-            </div>
+            <ListGroup
+              items={this.state.genres}
+              selectedItem={selectedGenre}
+              onItemSelected={this.handleGenreChange}></ListGroup>
           </div>
           <div className="col">
             <p>Showing {movies.length} movies</p>
