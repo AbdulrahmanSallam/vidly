@@ -1,11 +1,11 @@
-import Home from "./components/home";
+import Movies from "./components/movies";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 function App() {
   return (
     <main>
-      <Home></Home>
+      <Movies></Movies>
     </main>
   );
 }
