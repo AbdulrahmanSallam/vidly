@@ -1,4 +1,4 @@
-import Like from "./common/like";
+import Movie from "./movie";
 
 const Movies = props => {
   const { movies, handleLike, handleDelete } = props;
@@ -16,24 +16,11 @@ const Movies = props => {
       </thead>
       <tbody>
         {movies.map(movie => (
-          <tr key={movie._id}>
-            <td>{movie.title}</td>
-            <td>{movie.genre?.name}</td>
-            <td>{movie.numberInStock}</td>
-            <td>{movie.dailyRentalRate}</td>
-            <td>
-              <Like
-                liked={movie.liked}
-                onClick={() => handleLike(movie)}></Like>
-            </td>
-            <td>
-              <button
-                onClick={() => handleDelete(movie._id)}
-                className="btn btn-danger btn-small">
-                Delete
-              </button>
-            </td>
-          </tr>
+          <Movie
+            key={movie._id}
+            movie={movie}
+            handleLike={handleLike}
+            handleDelete={handleDelete}></Movie>
         ))}
       </tbody>
     </table>
