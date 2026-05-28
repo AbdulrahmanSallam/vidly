@@ -1,7 +1,7 @@
 import Like from "./common/like";
 
 const Movie = props => {
-  const { movie, handleLike, handleDelete } = props;
+  const { movie, onLike, onDelete } = props;
   return (
     <tr>
       <td>{movie.title}</td>
@@ -9,11 +9,11 @@ const Movie = props => {
       <td>{movie.numberInStock}</td>
       <td>{movie.dailyRentalRate}</td>
       <td>
-        <Like liked={movie.liked} onClick={() => handleLike(movie)}></Like>
+        <Like liked={movie.liked} onClick={() => onLike(movie)}></Like>
       </td>
       <td>
         <button
-          onClick={() => handleDelete(movie._id)}
+          onClick={() => onDelete(movie._id)}
           className="btn btn-danger btn-small">
           Delete
         </button>

@@ -1,10 +1,11 @@
 import { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
-import Movie from "./movie";
+
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate.js";
 import { getGenres } from "../services/fakeGenreService.js";
 import ListGroup from "./common/listGroup.jsx";
+import MoviesTable from "./movies-table.jsx";
 
 class Movies extends Component {
   state = {
@@ -53,6 +54,8 @@ class Movies extends Component {
       selectedGenre,
     } = this.state;
 
+    if (allMovies.length == 0) return <p>There is no movies</p>;
+
     const filteredMovies =
       selectedGenre && selectedGenre._id
         ? allMovies.filter(movie => movie.genre._id === selectedGenre._id)
@@ -73,27 +76,11 @@ class Movies extends Component {
           </div>
           <div className="col">
             <p>Showing {movies.length} movies</p>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Genre</th>
-                  <th>Stock</th>
-                  <th>Rate</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {movies.map(movie => (
-                  <Movie
-                    key={movie._id}
-                    movie={movie}
-                    handleLike={this.handleLike}
-                    handleDelete={this.handleDelete}></Movie>
-                ))}
-              </tbody>
-            </table>
+
+            <MoviesTable
+              movies={movies}
+              onLike={this.handleLike}
+              onDelete={this.handleDelete}></MoviesTable>
             <Pagination
               itemsCount={itemsCount}
               pageSize={pageSize}
