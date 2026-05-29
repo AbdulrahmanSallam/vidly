@@ -6,12 +6,14 @@ import { paginate } from "../utils/paginate.js";
 import { getGenres } from "../services/fakeGenreService.js";
 import ListGroup from "./common/listGroup.jsx";
 import MoviesTable from "./movies-table.jsx";
+import _ from "lodash";
 
 class Movies extends Component {
   state = {
     movies: [],
     genres: [],
     selectedGenre: {},
+    sortColumn: { path: "title", order: "asc" },
     currentPage: 1,
     pageSize: 3,
   };
@@ -46,12 +48,17 @@ class Movies extends Component {
     this.setState({ selectedGenre, currentPage: 1 });
   };
 
+  handleSort = sortColumn => {
+    this.setState({ sortColumn });
+  };
+
   render() {
     const {
       pageSize,
       currentPage,
       movies: allMovies,
       selectedGenre,
+      sortColumn,
     } = this.state;
 
     if (allMovies.length == 0) return <p>There is no movies</p>;
@@ -60,10 +67,15 @@ class Movies extends Component {
       selectedGenre && selectedGenre._id
         ? allMovies.filter(movie => movie.genre._id === selectedGenre._id)
         : allMovies;
-
     const itemsCount = filteredMovies.length;
 
-    const movies = paginate(filteredMovies, currentPage, pageSize);
+    const sortedMovies = _.orderBy(
+      filteredMovies,
+      [sortColumn.path],
+      [sortColumn.order],
+    );
+
+    const movies = paginate(sortedMovies, currentPage, pageSize);
 
     return (
       <section className="container pt-4">
@@ -80,14 +92,17 @@ class Movies extends Component {
             <MoviesTable
               movies={movies}
               onLike={this.handleLike}
-              onDelete={this.handleDelete}></MoviesTable>
+              onDelete={this.handleDelete}
+              sortColumn={this.state.sortColumn}
+              onSort={this.handleSort}></MoviesTable>
+
             <Pagination
               itemsCount={itemsCount}
               pageSize={pageSize}
               currentPage={currentPage}
               onPageChange={this.handlePageChange}></Pagination>
           </div>
-        </div>{" "}
+        </div>
       </section>
     );
   }
