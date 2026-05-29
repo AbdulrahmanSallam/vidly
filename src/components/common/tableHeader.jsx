@@ -12,6 +12,15 @@ const TableHeader = ({ columns, sortColumn, onSort }) => {
     onSort(sortColumnClone);
   };
 
+  const renderSortIcon = column => {
+    if (column.path !== sortColumn.path) return null;
+
+    if (sortColumn.order === "asc") {
+      return <i className="fas fa-sort-asc"></i>;
+    }
+    return <i className="fas fa-sort-desc"></i>;
+  };
+
   return (
     <thead>
       <tr>
@@ -21,6 +30,7 @@ const TableHeader = ({ columns, sortColumn, onSort }) => {
             onClick={() => raiseSort(column.path)}
             role="button">
             {column.label}
+            {renderSortIcon(column)}
           </th>
         ))}
       </tr>
