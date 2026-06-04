@@ -1,4 +1,5 @@
 import { Component } from "react";
+import Input from "./common/input";
 
 class Login extends Component {
   state = {
@@ -42,33 +43,19 @@ class Login extends Component {
       <section className="py-4">
         <div className="container">
           <form onSubmit={this.handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="userName" className="form-label">
-                User name
-              </label>
-              <input
-                onChange={this.handleChange}
-                value={this.state.userName}
-                autoFocus
-                type="text"
-                name="userName"
-                id="userName"
-                className="form-control"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <input
-                onChange={this.handleChange}
-                value={this.state.password}
-                type="password"
-                name="password"
-                id="password"
-                className="form-control"
-              />
-            </div>
+            <Input
+              onChange={this.handleChange}
+              value={this.state.name}
+              name="userName"
+              label="User name"></Input>
+
+            <Input
+              onChange={this.handleChange}
+              value={this.state.password}
+              name="password"
+              label="Password"
+              type="password"></Input>
+
             <button className="btn btn-primary">Login</button>
           </form>
         </div>
