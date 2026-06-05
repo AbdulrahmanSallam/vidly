@@ -7,14 +7,15 @@ import ListGroup from "./common/listGroup.jsx";
 import MoviesTable from "./movies-table.jsx";
 import _ from "lodash";
 import { NavLink } from "react-router-dom";
+import SearchBox from "./common/search.jsx";
 
 class Movies extends Component {
   state = {
     movies: [],
     genres: [],
-    selectedGenre: {},
+    selectedGenre: null,
     sortColumn: { path: "title", order: "asc" },
-    search: "",
+    searchQuery: "",
     currentPage: 1,
     pageSize: 3,
   };
@@ -46,7 +47,7 @@ class Movies extends Component {
   };
 
   handleGenreChange = selectedGenre => {
-    this.setState({ selectedGenre, currentPage: 1 });
+    this.setState({ selectedGenre, currentPage: 1, searchQuery: "" });
   };
 
   handleSort = sortColumn => {
@@ -60,12 +61,20 @@ class Movies extends Component {
       movies: allMovies,
       selectedGenre,
       sortColumn,
+      searchQuery,
     } = this.state;
 
-    const filteredMovies =
-      selectedGenre && selectedGenre._id
-        ? allMovies.filter(movie => movie.genre._id === selectedGenre._id)
-        : allMovies;
+    let filteredMovies = allMovies;
+
+    if (searchQuery) {
+      filteredMovies = filteredMovies.filter(movie =>
+        movie.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    } else if (selectedGenre && selectedGenre._id) {
+      filteredMovies = filteredMovies.filter(
+        movie => movie.genre._id === selectedGenre._id,
+      );
+    }
 
     const sortedMovies = _.orderBy(
       filteredMovies,
@@ -78,8 +87,12 @@ class Movies extends Component {
     return { data: movies, totalCount: filteredMovies.length };
   };
 
-  handleKeyup = e => {
-    console.log(e.currentTarget.value);
+  handleSearch = ({ currentTarget }) => {
+    this.setState({
+      searchQuery: currentTarget.value,
+      selectedGenre: null,
+      currentPage: 1,
+    });
   };
 
   render() {
@@ -106,12 +119,10 @@ class Movies extends Component {
 
             <p>Showing {data.length} movies</p>
 
-            <input
-              onKeyUp={this.handleKeyup}
-              type="text"
-              placeholder="Search..."
-              className="form-control mb-3"
-            />
+            <SearchBox
+              value={this.state.searchQuery}
+              onChange={this.handleSearch}></SearchBox>
+
             <MoviesTable
               movies={data}
               onLike={this.handleLike}
