@@ -8,6 +8,7 @@ import NotFound from "./components/notFound";
 import Navbar from "./components/navbar";
 import MovieForm from "./components/movie-form";
 import Login from "./components/login";
+import Register from "./components/register";
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
       <main>
         <Routes>
           <Route path="/login" Component={Login}></Route>
+          <Route path="/register" Component={Register}></Route>
+          <Route path="/movies/new" Component={MovieForm}></Route>
           <Route path="/movies/:id" Component={MovieForm}></Route>
           <Route path="/movies" Component={Movies}></Route>
           <Route path="/customers" Component={Customers}></Route>

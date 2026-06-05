@@ -6,7 +6,6 @@ const Input = ({ name, label, error, type, ...rest }) => {
       </label>
       <input
         {...rest}
-        autoFocus
         type={type}
         name={name}
         id={name}

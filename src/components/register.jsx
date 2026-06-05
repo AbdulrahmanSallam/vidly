@@ -1,9 +1,10 @@
 import Joi from "joi-browser";
 import Form from "./common/form";
 
-class Login extends Form {
+class Register extends Form {
   state = {
     data: {
+      name: "",
       email: "",
       password: "",
     },
@@ -11,22 +12,25 @@ class Login extends Form {
   };
 
   schema = {
+    name: Joi.string().required().label("Name"),
     email: Joi.string().email().email().required().label("Email"),
     password: Joi.string().required().min(7).label("Password"),
   };
 
-  doSubmit = () => {
-    console.log("submitted");
+  doSubmit = e => {
+    this.handleSubmit(e);
   };
 
   render() {
     return (
       <section className="py-4">
         <div className="container">
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={this.doSubmit}>
+            {this.renderInput("name", "Name")}
             {this.renderInput("email", "Email")}
             {this.renderInput("password", "Password", "password")}
-            {this.renderButton("Login")}
+
+            {this.renderButton("Register")}
           </form>
         </div>
       </section>
@@ -34,4 +38,4 @@ class Login extends Form {
   }
 }
 
-export default Login;
+export default Register;

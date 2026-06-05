@@ -6,6 +6,7 @@ import Pagination from "./common/pagination";
 import ListGroup from "./common/listGroup.jsx";
 import MoviesTable from "./movies-table.jsx";
 import _ from "lodash";
+import { NavLink } from "react-router-dom";
 
 class Movies extends Component {
   state = {
@@ -13,6 +14,7 @@ class Movies extends Component {
     genres: [],
     selectedGenre: {},
     sortColumn: { path: "title", order: "asc" },
+    search: "",
     currentPage: 1,
     pageSize: 3,
   };
@@ -76,6 +78,10 @@ class Movies extends Component {
     return { data: movies, totalCount: filteredMovies.length };
   };
 
+  handleKeyup = e => {
+    console.log(e.currentTarget.value);
+  };
+
   render() {
     const moviesCount = this.state.movies.length;
 
@@ -94,8 +100,18 @@ class Movies extends Component {
               onItemSelected={this.handleGenreChange}></ListGroup>
           </div>
           <div className="col">
+            <NavLink to={"/movies/new"} className="btn btn-primary mb-3">
+              New movie
+            </NavLink>
+
             <p>Showing {data.length} movies</p>
 
+            <input
+              onKeyUp={this.handleKeyup}
+              type="text"
+              placeholder="Search..."
+              className="form-control mb-3"
+            />
             <MoviesTable
               movies={data}
               onLike={this.handleLike}

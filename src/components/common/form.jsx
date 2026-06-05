@@ -7,7 +7,7 @@ class Form extends Component {
 
   validate = () => {
     const options = { abortEarly: false };
-    const { error } = Joi.validate(this.state.data, this.scehma, options);
+    const { error } = Joi.validate(this.state.data, this.schema, options);
     if (!error) return null;
 
     const errors = {};
@@ -21,7 +21,7 @@ class Form extends Component {
 
   validateProperty = ({ name, value }) => {
     const obj = { [name]: value };
-    const schema = { [name]: this.scehma[name] };
+    const schema = { [name]: this.schema[name] };
     const { error } = Joi.validate(obj, schema);
 
     return error ? error.details[0].message : null;
@@ -29,13 +29,13 @@ class Form extends Component {
 
   handleChange = ({ currentTarget: input }) => {
     const { errors } = { ...this.state };
+    console.log(input);
     const errorMessage = this.validateProperty(input);
     if (errorMessage) {
       errors[input.name] = errorMessage;
     } else {
       delete errors[input.name];
     }
-    console.log(errorMessage);
 
     const { data } = { ...this.state };
     data[input.name] = input.value;
@@ -64,6 +64,27 @@ class Form extends Component {
         onChange={this.handleChange}
         error={errors[name]}
         type={type}></Input>
+    );
+  };
+
+  renderSelect = (name, label, options) => {
+    return (
+      <div className="mb-4">
+        <label htmlFor={name}>{label}</label>
+        <select
+          onChange={this.handleChange}
+          value={this.state.data.genreId}
+          name={name}
+          id={name}
+          className="form-select">
+          <option value="">select {label.toLocaleLowerCase()}</option>
+          {options.map(option => (
+            <option key={option._id} value={option._id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+      </div>
     );
   };
 
