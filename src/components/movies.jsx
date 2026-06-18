@@ -1,13 +1,14 @@
 import { Component } from "react";
-import { getMovies } from "../services/fakeMovieService";
 import { paginate } from "../utils/paginate.js";
-import { getGenres } from "../services/fakeGenreService.js";
 import Pagination from "./common/pagination";
 import ListGroup from "./common/listGroup.jsx";
 import MoviesTable from "./movies-table.jsx";
 import _ from "lodash";
 import { NavLink } from "react-router-dom";
 import SearchBox from "./common/search.jsx";
+import { getGenres } from "../services/genreService.js";
+import { deleteMovie, getMovies } from "../services/movieService.js";
+import { toast } from "react-toastify";
 
 class Movies extends Component {
   state = {
@@ -20,17 +21,39 @@ class Movies extends Component {
     pageSize: 3,
   };
 
-  componentDidMount() {
+  async populateGenres() {
+    const { data } = await getGenres();
     const defaultGenre = { _id: "", name: "All genres" };
-    const genres = [defaultGenre, ...getGenres()];
+    const genres = [defaultGenre, ...data];
 
-    this.setState({ movies: getMovies(), genres, selectedGenre: defaultGenre });
+    this.setState({ genres, selectedGenre: defaultGenre });
   }
 
-  handleDelete = id => {
-    const movies = this.state.movies.filter(m => m._id != id);
+  async populateMovies() {
+    const { data: movies } = await getMovies();
+
+    this.setState({ movies });
+  }
+
+  async componentDidMount() {
+    await this.populateGenres();
+    await this.populateMovies();
+  }
+
+  handleDelete = async movie => {
+    const originalMovies = this.state.movies;
+    const movies = this.state.movies.filter(m => m._id != movie.id);
 
     this.setState({ movies: movies });
+
+    try {
+      await deleteMovie(movie._id);
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404) {
+        toast.error("This movie has already been deleted.");
+      }
+      this.setState({ movies: originalMovies });
+    }
   };
 
   handleLike = movie => {
@@ -84,7 +107,7 @@ class Movies extends Component {
 
     const movies = paginate(sortedMovies, currentPage, pageSize);
 
-    return { data: movies, totalCount: filteredMovies.length };
+    return { data: movies, totalCount: filteredMovies?.length };
   };
 
   handleSearch = ({ currentTarget }) => {
@@ -96,7 +119,7 @@ class Movies extends Component {
   };
 
   render() {
-    const moviesCount = this.state.movies.length;
+    const moviesCount = this.state.movies?.length;
 
     if (moviesCount == 0) return <p>There is no movies</p>;
 

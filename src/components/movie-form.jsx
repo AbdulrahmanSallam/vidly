@@ -1,8 +1,8 @@
 import Joi from "joi-browser";
 import withRouter from "../utils/withRouter";
 import Form from "./common/form";
-import { getMovie, saveMovie } from "../services/fakeMovieService";
-import { getGenres } from "../services/fakeGenreService";
+import { getMovie, saveMovie } from "../services/movieService";
+import { getGenres } from "../services/genreService";
 
 class MovieForm extends Form {
   state = {
@@ -26,17 +26,28 @@ class MovieForm extends Form {
     liked: Joi.boolean(),
   };
 
-  componentDidMount() {
-    const genres = getGenres();
-    this.setState({ genres });
+  async populateGenres() {
+    const { data } = await getGenres();
+    console.log("genres", data);
+    this.setState({ genres: data });
+  }
 
-    const movieId = this.props.params.id;
-
-    if (movieId) {
-      const movie = getMovie(movieId);
-      if (!movie) return this.props.navigate("/not-found", { replace: true });
+  async populateMovies() {
+    try {
+      const movieId = this.props.params.id;
+      if (!movieId) return;
+      const movie = await getMovie();
       this.setState({ data: this.mapToMovieModel(movie) });
+    } catch (ex) {
+      if (ex.response && ex.response.status === 401) {
+        return this.props.navigate("/not-found");
+      }
     }
+  }
+
+  async componentDidMount() {
+    await this.populateGenres();
+    await this.populateMovies();
   }
 
   mapToMovieModel = movie => {
@@ -49,12 +60,15 @@ class MovieForm extends Form {
     };
   };
 
-  doSubmit = () => {
+  doSubmit = async () => {
+    let res = [];
+    console.log(res);
     if (this.id) {
-      saveMovie({ _id: this.id, ...this.state.data });
+      res = (await saveMovie({ _id: this.id, ...this.state.data })).data;
     } else {
-      saveMovie(this.state.data);
+      res = (await saveMovie(this.state.data)).data;
     }
+    console.log(res);
 
     this.props.navigate("/movies");
   };
