@@ -22,8 +22,8 @@ class Register extends Form {
   doSubmit = async () => {
     try {
       const result = await userService.register(this.state.data);
-      const token = result.headers["x-auth-token"];
-      localStorage.setItem("token", token);
+      const jwt = result.headers["x-auth-token"];
+      localStorage.setItem("token", jwt);
       this.props.navigate("/movies");
     } catch (err) {
       if (err.response && err.response.status === 400) {

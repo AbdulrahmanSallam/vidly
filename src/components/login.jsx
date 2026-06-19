@@ -1,5 +1,7 @@
 import Joi from "joi-browser";
 import Form from "./common/form";
+import { login } from "../services/authService";
+import withRouter from "../utils/withRouter";
 
 class Login extends Form {
   state = {
@@ -11,12 +13,24 @@ class Login extends Form {
   };
 
   schema = {
-    email: Joi.string().email().email().required().label("Email"),
-    password: Joi.string().required().min(7).label("Password"),
+    email: Joi.string().email().min(5).max(255).required().label("Email"),
+    password: Joi.string().min(7).max(255).required().label("Password"),
   };
 
-  doSubmit = () => {
-    console.log("submitted");
+  doSubmit = async () => {
+    try {
+      console.log(this.state.data);
+      const { data } = this.state;
+      const { data: jwt } = await login(data.email, data.password);
+      localStorage.setItem("token", jwt);
+      this.props.navigate("/movies");
+    } catch (err) {
+      if (err.response && err.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.email = "Invalid Email or Password.";
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {
@@ -34,4 +48,4 @@ class Login extends Form {
   }
 }
 
-export default Login;
+export default withRouter(Login);
