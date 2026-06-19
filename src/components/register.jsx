@@ -1,5 +1,7 @@
 import Joi from "joi-browser";
 import Form from "./common/form";
+import * as userService from "../services/userService";
+import withRouter from "../utils/withRouter";
 
 class Register extends Form {
   state = {
@@ -12,20 +14,31 @@ class Register extends Form {
   };
 
   schema = {
-    name: Joi.string().required().label("Name"),
+    name: Joi.string().required().label("User Name"),
     email: Joi.string().email().email().required().label("Email"),
     password: Joi.string().required().min(7).label("Password"),
   };
 
-  doSubmit = e => {
-    this.handleSubmit(e);
+  doSubmit = async () => {
+    try {
+      const result = await userService.register(this.state.data);
+      const token = result.headers["x-auth-token"];
+      localStorage.setItem("token", token);
+      this.props.navigate("/movies");
+    } catch (err) {
+      if (err.response && err.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.name = err.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {
     return (
       <section className="py-4">
         <div className="container">
-          <form onSubmit={this.doSubmit}>
+          <form onSubmit={this.handleSubmit}>
             {this.renderInput("name", "Name")}
             {this.renderInput("email", "Email")}
             {this.renderInput("password", "Password", "password")}
@@ -38,4 +51,4 @@ class Register extends Form {
   }
 }
 
-export default Register;
+export default withRouter(Register);
