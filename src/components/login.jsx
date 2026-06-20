@@ -23,7 +23,7 @@ class Login extends Form {
       const { data } = this.state;
       const { data: jwt } = await login(data.email, data.password);
       localStorage.setItem("token", jwt);
-      this.props.navigate("/movies");
+      window.location = "/movies";
     } catch (err) {
       if (err.response && err.response.status === 400) {
         const errors = { ...this.state.errors };

@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ user }) => {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -34,16 +34,34 @@ const Navbar = () => {
                 Rentals
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink to={"login"} className="nav-link">
-                Login
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink to={"register"} className="nav-link">
-                Register
-              </NavLink>
-            </li>
+            {user && (
+              <>
+                <li className="nav-item">
+                  <NavLink to={"profile"} className="nav-link">
+                    Profile
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink to={"logout"} className="nav-link">
+                    Log out
+                  </NavLink>
+                </li>
+              </>
+            )}
+            {!user && (
+              <>
+                <li className="nav-item">
+                  <NavLink to={"login"} className="nav-link">
+                    Login
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink to={"register"} className="nav-link">
+                    Register
+                  </NavLink>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
