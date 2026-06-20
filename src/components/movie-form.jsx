@@ -19,8 +19,8 @@ class MovieForm extends Form {
   schema = {
     title: Joi.string().required(),
     genreId: Joi.string().required(),
-    numberInStock: Joi.number().required(),
-    dailyRentalRate: Joi.number().required(),
+    numberInStock: Joi.number().integer().min(0).required(),
+    dailyRentalRate: Joi.number().min(0).required(),
     _id: Joi.string(),
     publishDate: Joi.date(),
     liked: Joi.boolean(),

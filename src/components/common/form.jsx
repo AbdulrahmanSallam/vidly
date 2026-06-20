@@ -37,6 +37,13 @@ class Form extends Component {
     }
 
     const data = { ...this.state.data };
+
+    if (input.type === "number") {
+      data[input.name] = input.value === "" ? "" : Number(input.value);
+    } else {
+      data[input.name] = input.value;
+    }
+
     data[input.name] = input.value;
 
     this.setState({ data, errors });
