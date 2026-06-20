@@ -1,6 +1,6 @@
 import Joi from "joi-browser";
 import Form from "./common/form";
-import { login } from "../services/authService";
+import authService from "../services/authService";
 import withRouter from "../utils/withRouter";
 
 class Login extends Form {
@@ -21,9 +21,8 @@ class Login extends Form {
     try {
       console.log(this.state.data);
       const { data } = this.state;
-      const { data: jwt } = await login(data.email, data.password);
-      localStorage.setItem("token", jwt);
-      window.location = "/movies";
+      await authService.login(data.email, data.password);
+      window.location = "/";
     } catch (err) {
       if (err.response && err.response.status === 400) {
         const errors = { ...this.state.errors };

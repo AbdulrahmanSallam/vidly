@@ -1,6 +1,8 @@
 import Joi from "joi-browser";
 import Form from "./common/form";
 import * as userService from "../services/userService";
+import authService from "../services/authService";
+
 import withRouter from "../utils/withRouter";
 
 class Register extends Form {
@@ -23,7 +25,7 @@ class Register extends Form {
     try {
       const result = await userService.register(this.state.data);
       const jwt = result.headers["x-auth-token"];
-      localStorage.setItem("token", jwt);
+      authService.loginWithJwt(jwt);
       window.location = "/movies";
     } catch (err) {
       if (err.response && err.response.status === 400) {

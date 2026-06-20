@@ -1,4 +1,3 @@
-import { jwtDecode } from "jwt-decode";
 import { Route, Routes } from "react-router-dom";
 import { Component } from "react";
 import Movies from "./components/movies";
@@ -10,21 +9,18 @@ import MovieForm from "./components/movie-form";
 import Login from "./components/login";
 import Register from "./components/register";
 import Logout from "./components/logout";
+import authService from "./services/authService";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 class App extends Component {
-  state = {};
+  state = {
+    user: null,
+  };
 
   componentDidMount() {
-    try {
-      const token = localStorage.getItem("token");
-      const user = jwtDecode(token);
-      this.setState({ user });
-      console.log(user);
-    } catch (err) {
-      console.log("error get user ", err);
-    }
+    const user = authService.getCurrentUser();
+    this.setState({ user });
   }
 
   render() {
