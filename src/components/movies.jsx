@@ -119,6 +119,7 @@ class Movies extends Component {
   };
 
   render() {
+    const { user } = this.props;
     const moviesCount = this.state.movies?.length;
 
     if (moviesCount == 0) return <p>There is no movies</p>;
@@ -136,9 +137,11 @@ class Movies extends Component {
               onItemSelected={this.handleGenreChange}></ListGroup>
           </div>
           <div className="col">
-            <NavLink to={"/movies/new"} className="btn btn-primary mb-3">
-              New movie
-            </NavLink>
+            {user && (
+              <NavLink to={"/movies/new"} className="btn btn-primary mb-3">
+                New movie
+              </NavLink>
+            )}
 
             <p>Showing {data.length} movies</p>
 

@@ -64,9 +64,9 @@ class MovieForm extends Form {
     let res = [];
     console.log(res);
     if (this.id) {
-      res = (await saveMovie({ _id: this.id, ...this.state.data })).data;
+      await saveMovie({ _id: this.id, ...this.state.data }).data;
     } else {
-      res = (await saveMovie(this.state.data)).data;
+      await saveMovie(this.state.data).data;
     }
     console.log(res);
 
