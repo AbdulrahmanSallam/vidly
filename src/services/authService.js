@@ -1,8 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import http from "../services/httpService";
-import { apiUrl } from "../config.json";
 
-const apiEndpoint = `${apiUrl}/auth`;
+const apiEndpoint = "/auth";
 const tokenKey = "token";
 
 http.setJwt(getJwt());
@@ -25,8 +24,7 @@ export function getCurrentUser() {
     const token = localStorage.getItem(tokenKey);
     const user = jwtDecode(token);
     return user;
-  } catch (err) {
-    console.log("error get user ", err);
+  } catch {
     return null;
   }
 }

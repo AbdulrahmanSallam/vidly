@@ -17,7 +17,7 @@ class MovieForm extends Form {
   };
 
   schema = {
-    title: Joi.string().required(),
+    title: Joi.string().min(5).required(),
     genreId: Joi.string().required(),
     numberInStock: Joi.number().integer().min(0).required(),
     dailyRentalRate: Joi.number().min(0).required(),
@@ -28,7 +28,6 @@ class MovieForm extends Form {
 
   async populateGenres() {
     const { data } = await getGenres();
-    console.log("genres", data);
     this.setState({ genres: data });
   }
 
@@ -36,10 +35,10 @@ class MovieForm extends Form {
     try {
       const movieId = this.props.params.id;
       if (!movieId) return;
-      const movie = await getMovie();
+      const { data: movie } = await getMovie(movieId);
       this.setState({ data: this.mapToMovieModel(movie) });
     } catch (ex) {
-      if (ex.response && ex.response.status === 401) {
+      if (ex.response && ex.response.status === 404) {
         return this.props.navigate("/not-found");
       }
     }
@@ -56,21 +55,33 @@ class MovieForm extends Form {
       title: movie.title,
       numberInStock: movie.numberInStock,
       dailyRentalRate: movie.dailyRentalRate,
-      genreId: movie.genre._id,
+      genreId: movie.genre?._id || movie.genreId,
     };
   };
 
   doSubmit = async () => {
-    let res = [];
-    console.log(res);
-    if (this.id) {
-      await saveMovie({ _id: this.id, ...this.state.data }).data;
-    } else {
-      await saveMovie(this.state.data).data;
-    }
-    console.log(res);
+    try {
+      const movieId = this.props.params.id;
 
-    this.props.navigate("/movies");
+      const movieData = { ...this.state.data };
+
+      if (movieId) {
+        movieData._id = movieId;
+        await saveMovie(movieData);
+      } else {
+        // ✅ For new movies, remove _id if it exists
+        delete movieData._id;
+        await saveMovie(movieData);
+      }
+
+      this.props.navigate("/movies");
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.title = ex.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {

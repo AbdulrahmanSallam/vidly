@@ -42,11 +42,10 @@ class Movies extends Component {
 
   handleDelete = async movie => {
     const originalMovies = this.state.movies;
-    const movies = this.state.movies.filter(m => m._id != movie.id);
-
-    this.setState({ movies: movies });
 
     try {
+      const movies = this.state.movies.filter(m => m._id != movie._id);
+      this.setState({ movies: movies });
       await deleteMovie(movie._id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404) {
@@ -120,13 +119,9 @@ class Movies extends Component {
 
   render() {
     const { user } = this.props;
-    const moviesCount = this.state.movies?.length;
-
-    if (moviesCount == 0) return <p>There is no movies</p>;
-
     const { totalCount, data } = this.getPagedData();
-
     const { pageSize, currentPage, selectedGenre } = this.state;
+
     return (
       <section className="container pt-4">
         <div className="row">

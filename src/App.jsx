@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { Component } from "react";
 import Movies from "./components/movies";
 import Customers from "./components/customers";
@@ -12,36 +12,58 @@ import Logout from "./components/logout";
 import authService from "./services/authService";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import ProtectedRoute from "./components/common/protectedRoute";
 
 class App extends Component {
   state = {
     user: null,
+    loading: true,
   };
 
   componentDidMount() {
     const user = authService.getCurrentUser();
-    this.setState({ user });
+    this.setState({ user, loading: false });
   }
 
+  handleLogin = user => {
+    this.setState({ user });
+  };
+
+  handleLogout = () => {
+    authService.logout();
+    this.setState({ user: null });
+  };
+
   render() {
+    const { user, loading } = this.state;
+
+    if (loading) return null;
+
     return (
       <>
-        <Navbar user={this.state.user}></Navbar>
+        <Navbar user={user} onLogout={this.handleLogout} />
         <main>
           <Routes>
-            <Route path="/login" Component={Login}></Route>
-            <Route path="/logout" Component={Logout}></Route>
-            <Route path="/register" Component={Register}></Route>
-            <Route path="/movies/new" Component={MovieForm}></Route>
-            <Route path="/movies/:id" Component={MovieForm}></Route>
             <Route
-              path="/movies"
-              element={<Movies user={this.state.user}></Movies>}></Route>
-            <Route path="/customers" Component={Customers}></Route>
-            <Route path="/rentals" Component={Rentals}></Route>
-            <Route path="/not-found" Component={NotFound}></Route>
-            <Route path="/" Component={Movies}></Route>
-            <Route path="*" Component={NotFound}></Route>
+              path="/login"
+              element={<Login onLogin={this.handleLogin} user={user} />}
+            />
+            <Route
+              path="/logout"
+              element={<Logout onLogout={this.handleLogout} />}
+            />
+            <Route path="/register" element={<Register />} />
+
+            <Route element={<ProtectedRoute user={user} />}>
+              <Route path="/movies/new" element={<MovieForm />} />
+              <Route path="/movies/:id" element={<MovieForm />} />
+            </Route>
+            <Route path="/movies" element={<Movies user={user} />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/rentals" element={<Rentals />} />
+            <Route path="/not-found" element={<NotFound />} />
+            <Route path="/" element={<Navigate to="/movies" />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </>

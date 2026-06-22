@@ -1,6 +1,8 @@
 import axios from "axios";
 import logger from "./logService";
 
+axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL;
+
 axios.interceptors.response.use(null, err => {
   const expectedError =
     err.response && err.response.status >= 400 && err.response.status < 500;

@@ -43,9 +43,6 @@ class Form extends Component {
     } else {
       data[input.name] = input.value;
     }
-
-    data[input.name] = input.value;
-
     this.setState({ data, errors });
   };
 
@@ -79,7 +76,7 @@ class Form extends Component {
         <label htmlFor={name}>{label}</label>
         <select
           onChange={this.handleChange}
-          value={this.state.data.genreId}
+          value={this.state.data[name]}
           name={name}
           id={name}
           className="form-select">

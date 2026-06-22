@@ -1,8 +1,8 @@
+import { Navigate } from "react-router-dom";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import authService from "../services/authService";
 import withRouter from "../utils/withRouter";
-
 class Login extends Form {
   state = {
     data: {
@@ -19,10 +19,18 @@ class Login extends Form {
 
   doSubmit = async () => {
     try {
-      console.log(this.state.data);
       const { data } = this.state;
       await authService.login(data.email, data.password);
-      window.location = "/";
+
+      // Get the user after login
+      const user = authService.getCurrentUser();
+
+      // Update App state via callback
+      this.props.onLogin(user);
+
+      // Navigate to intended page or default to "/"
+      const from = this.props.location.state?.from || "/";
+      this.props.navigate(from, { replace: true });
     } catch (err) {
       if (err.response && err.response.status === 400) {
         const errors = { ...this.state.errors };
@@ -33,6 +41,7 @@ class Login extends Form {
   };
 
   render() {
+    if (authService.getCurrentUser()) return <Navigate to="/movies" replace />;
     return (
       <section className="py-4">
         <div className="container">

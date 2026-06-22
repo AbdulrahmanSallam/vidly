@@ -1,15 +1,20 @@
 import { Component } from "react";
-import authService from "../services/authService";
+import { Navigate } from "react-router-dom";
 
 class Logout extends Component {
-  state = {};
+  state = {
+    done: false,
+  };
 
   componentDidMount() {
-    authService.logout();
-    window.location = "/";
+    this.props.onLogout();
+    this.setState({ done: true });
   }
 
   render() {
+    if (this.state.done) {
+      return <Navigate to="/login" replace />;
+    }
     return null;
   }
 }
