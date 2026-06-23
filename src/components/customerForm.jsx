@@ -1,5 +1,5 @@
 import Joi from "joi-browser";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import withRouter from "../utils/withRouter";
 import Form from "./common/form";
 import { getCustomer, saveCustomer } from "../services/customerService";
@@ -13,6 +13,7 @@ class CustomerForm extends Form {
       isGold: false,
     },
     errors: {},
+    touched: {},
   };
 
   schema = {
@@ -76,8 +77,6 @@ class CustomerForm extends Form {
   };
 
   render() {
-    const { data } = this.state;
-
     return (
       <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50">
         <motion.div
@@ -86,13 +85,12 @@ class CustomerForm extends Form {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-8 text-center">
+            <div className="bg-linear-to-r from-blue-600 to-indigo-600 px-6 py-8 text-center">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                className="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4">
                 <i className="fa fa-user-circle text-white text-4xl"></i>
               </motion.div>
               <h2 className="text-2xl font-bold text-white">
@@ -105,139 +103,16 @@ class CustomerForm extends Form {
               </p>
             </div>
 
-            {/* Form */}
             <form onSubmit={this.handleSubmit} className="px-6 py-6 space-y-5">
-              {/* Name Field */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <i className="fa fa-user mr-2 text-blue-500"></i>
-                  Full Name
-                </label>
-                <input
-                  value={data.name}
-                  name="name"
-                  onChange={this.handleChange}
-                  type="text"
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 outline-none focus:ring-4 
-                    ${
-                      this.state.errors.name
-                        ? "border-red-400 focus:ring-red-100 bg-red-50"
-                        : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                    }`}
-                  placeholder="John Doe"
-                />
-                <AnimatePresence>
-                  {this.state.errors.name && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="text-red-500 text-xs mt-1.5 flex items-center">
-                      <i className="fa fa-exclamation-circle mr-1"></i>
-                      {this.state.errors.name}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
+              {this.renderInput("name", "Full Name")}
+              {this.renderInput("phone", "Phone Number")}
+              {this.renderCheckbox("isGold", "Gold Member")}
 
-              {/* Phone Field */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <i className="fa fa-phone mr-2 text-blue-500"></i>
-                  Phone Number
-                </label>
-                <input
-                  value={data.phone}
-                  name="phone"
-                  onChange={this.handleChange}
-                  type="text"
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 outline-none focus:ring-4 
-                    ${
-                      this.state.errors.phone
-                        ? "border-red-400 focus:ring-red-100 bg-red-50"
-                        : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                    }`}
-                  placeholder="+1 234 567 890"
-                />
-                <AnimatePresence>
-                  {this.state.errors.phone && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="text-red-500 text-xs mt-1.5 flex items-center">
-                      <i className="fa fa-exclamation-circle mr-1"></i>
-                      {this.state.errors.phone}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Gold Member Toggle */}
-              <motion.div
-                whileHover={{ scale: 1.01 }}
-                className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
-                  ${data.isGold ? "border-amber-400 bg-amber-50" : "border-gray-200 bg-gray-50 hover:bg-gray-100"}`}
-                onClick={() => {
-                  const event = {
-                    currentTarget: {
-                      type: "checkbox",
-                      name: "isGold",
-                      checked: !data.isGold,
-                    },
-                  };
-                  this.handleChange(event);
-                }}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <motion.div
-                      animate={{ rotate: data.isGold ? 360 : 0 }}
-                      transition={{ duration: 0.5 }}>
-                      <i
-                        className={`fa fa-star text-2xl ${data.isGold ? "text-amber-500" : "text-gray-400"}`}></i>
-                    </motion.div>
-                    <div className="ml-3">
-                      <p className="font-semibold text-gray-700">Gold Member</p>
-                      <p className="text-xs text-gray-500">
-                        Premium customer status
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    className={`w-12 h-7 rounded-full p-1 transition-all duration-300 ${data.isGold ? "bg-amber-500" : "bg-gray-300"}`}>
-                    <motion.div
-                      animate={{ x: data.isGold ? 20 : 0 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                      className="w-5 h-5 bg-white rounded-full shadow-md"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Buttons */}
               <div className="space-y-3 pt-2">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all duration-200">
-                  <i className="fa fa-check mr-2"></i>
-                  {this.props.params.id ? "Update Customer" : "Create Customer"}
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="button"
-                  onClick={() => this.props.navigate("/customers")}
-                  className="w-full py-3.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all duration-200">
-                  <i className="fa fa-arrow-left mr-2"></i>
-                  Back to Customers
-                </motion.button>
+                {this.renderButton(
+                  this.props.params.id ? "Update Customer" : "Create Customer",
+                )}
+                {this.renderBackButton(() => this.props.navigate("/customers"))}
               </div>
             </form>
           </div>

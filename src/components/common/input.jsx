@@ -1,5 +1,4 @@
-// components/common/input.jsx
-const Input = ({ name, label, error, type, icon, ...rest }) => {
+const Input = ({ name, label, error, type, icon, onBlur, ...rest }) => {
   return (
     <div className="mb-3">
       <label htmlFor={name} className="form-label fw-semibold">
@@ -14,6 +13,7 @@ const Input = ({ name, label, error, type, icon, ...rest }) => {
           </span>
           <input
             {...rest}
+            onBlur={onBlur}
             type={type}
             name={name}
             id={name}
@@ -34,6 +34,7 @@ const Input = ({ name, label, error, type, icon, ...rest }) => {
         <>
           <input
             {...rest}
+            onBlur={onBlur}
             type={type}
             name={name}
             id={name}

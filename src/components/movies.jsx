@@ -54,14 +54,6 @@ class Movies extends Component {
     }
   };
 
-  handleLike = movie => {
-    const movies = [...this.state.movies];
-    const index = movies.indexOf(movie);
-    movies[index] = { ...movie };
-    movies[index].liked = !movie.liked;
-    this.setState({ movies });
-  };
-
   handlePageChange = page => this.setState({ currentPage: page });
   handleGenreChange = selectedGenre =>
     this.setState({ selectedGenre, currentPage: 1, searchQuery: "" });
@@ -118,7 +110,7 @@ class Movies extends Component {
           className="max-w-7xl mx-auto">
           <div className="flex gap-6">
             {/* Sidebar - Genre List */}
-            <div className="w-48 flex-shrink-0 hidden lg:block">
+            <div className="w-48 shrink-0 hidden lg:block">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sticky top-24">
                 <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
                   Genres
@@ -193,7 +185,6 @@ class Movies extends Component {
 
                   <MoviesTable
                     movies={data}
-                    onLike={this.handleLike}
                     onDelete={this.handleDelete}
                     sortColumn={this.state.sortColumn}
                     onSort={this.handleSort}

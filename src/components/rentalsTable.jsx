@@ -3,45 +3,69 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import authService from "../services/authService";
 
-class MoviesTable extends Component {
+const formatDate = date => {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+class RentalsTable extends Component {
   columns = [
     {
-      key: "title",
-      label: "Title",
-      render: movie => (
+      key: "customer.name",
+      label: "Customer",
+      render: rental => (
         <Link
-          to={`/movies/${movie._id}`}
+          to={`/customers/${rental.customer?._id}`}
           className="flex items-center text-blue-600 hover:text-blue-800 font-medium">
-          <i className="fa fa-film mr-2 text-gray-400"></i>
-          {movie.title}
+          <i className="fa fa-user mr-2 text-gray-400"></i>
+          {rental.customer?.name}
         </Link>
       ),
     },
     {
-      key: "genre.name",
-      label: "Genre",
-      render: movie => (
-        <span className="inline-flex items-center px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
-          {movie.genre?.name}
+      key: "movie.title",
+      label: "Movie",
+      render: rental => (
+        <Link
+          to={`/movies/${rental.movie?._id}`}
+          className="flex items-center text-blue-600 hover:text-blue-800 font-medium">
+          <i className="fa fa-film mr-2 text-gray-400"></i>
+          {rental.movie?.title}
+        </Link>
+      ),
+    },
+    {
+      key: "dateOut",
+      label: "Rented",
+      render: rental => (
+        <span className="flex items-center text-gray-700">
+          <i className="fa fa-calendar-plus mr-2 text-blue-500"></i>
+          {formatDate(rental.dateOut)}
         </span>
       ),
     },
     {
-      key: "numberInStock",
-      label: "Stock",
-      render: movie => (
+      key: "dateReturned",
+      label: "Returned",
+      render: rental => (
         <span
-          className={`font-semibold ${movie.numberInStock < 5 ? "text-red-500" : "text-green-600"}`}>
-          {movie.numberInStock}
+          className={`flex items-center ${rental.dateReturned ? "text-green-600" : "text-orange-500"}`}>
+          <i
+            className={`fa ${rental.dateReturned ? "fa-check-circle" : "fa-clock"} mr-2`}></i>
+          {rental.dateReturned ? formatDate(rental.dateReturned) : "Pending"}
         </span>
       ),
     },
     {
-      key: "dailyRentalRate",
-      label: "Rate",
-      render: movie => (
-        <span className="font-medium text-gray-700">
-          ${movie.dailyRentalRate}
+      key: "rentalFee",
+      label: "Fee",
+      render: rental => (
+        <span className="font-semibold text-gray-900">
+          ${rental.rentalFee || rental.movie?.dailyRentalRate || 0}
         </span>
       ),
     },
@@ -50,11 +74,11 @@ class MoviesTable extends Component {
   deleteColumn = {
     key: "delete",
     label: "",
-    render: movie => (
+    render: rental => (
       <button
-        onClick={() => this.props.onDelete(movie)}
+        onClick={() => this.props.onDelete(rental)}
         className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-        title="Delete movie">
+        title="Delete rental">
         <i className="fa fa-trash"></i>
       </button>
     ),
@@ -86,12 +110,13 @@ class MoviesTable extends Component {
   };
 
   render() {
-    const { movies } = this.props;
+    const { rentals } = this.props;
     const sortableKeys = [
-      "title",
-      "genre.name",
-      "numberInStock",
-      "dailyRentalRate",
+      "customer.name",
+      "movie.title",
+      "dateOut",
+      "dateReturned",
+      "rentalFee",
     ];
 
     return (
@@ -118,17 +143,18 @@ class MoviesTable extends Component {
           </thead>
           <tbody>
             <AnimatePresence>
-              {movies.map((movie, index) => (
+              {rentals.map((rental, index) => (
                 <motion.tr
-                  key={movie._id}
+                  key={rental._id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ delay: index * 0.05 }}
-                  className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                  className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors
+                    ${rental.dateReturned ? "" : "bg-orange-50/30"}`}>
                   {this.columns.map(col => (
                     <td key={col.key} className="py-3 px-4">
-                      {col.render(movie)}
+                      {col.render(rental)}
                     </td>
                   ))}
                 </motion.tr>
@@ -136,10 +162,10 @@ class MoviesTable extends Component {
             </AnimatePresence>
           </tbody>
         </table>
-        {movies.length === 0 && (
+        {rentals.length === 0 && (
           <div className="text-center py-12 text-gray-400">
-            <i className="fa fa-film text-4xl mb-3"></i>
-            <p>No movies found</p>
+            <i className="fa fa-ticket text-4xl mb-3"></i>
+            <p>No rentals found</p>
           </div>
         )}
       </div>
@@ -147,4 +173,4 @@ class MoviesTable extends Component {
   }
 }
 
-export default MoviesTable;
+export default RentalsTable;
