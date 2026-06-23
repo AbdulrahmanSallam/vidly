@@ -2,10 +2,11 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { Component } from "react";
 import Movies from "./components/movies";
 import Customers from "./components/customers";
+import CustomerForm from "./components/customerForm";
 import Rentals from "./components/rentals";
 import NotFound from "./components/notFound";
 import Navbar from "./components/navbar";
-import MovieForm from "./components/movie-form";
+import MovieForm from "./components/movieForm";
 import Login from "./components/login";
 import Register from "./components/register";
 import Logout from "./components/logout";
@@ -44,6 +45,7 @@ class App extends Component {
         <Navbar user={user} onLogout={this.handleLogout} />
         <main>
           <Routes>
+            {/* Public Routes */}
             <Route
               path="/login"
               element={<Login onLogin={this.handleLogin} user={user} />}
@@ -54,12 +56,20 @@ class App extends Component {
             />
             <Route path="/register" element={<Register />} />
 
+            {/* Protected Routes - Require Authentication */}
             <Route element={<ProtectedRoute user={user} />}>
+              {/* Movie Routes */}
               <Route path="/movies/new" element={<MovieForm />} />
               <Route path="/movies/:id" element={<MovieForm />} />
+
+              {/* Customer Routes */}
+              <Route path="/customers/new" element={<CustomerForm />} />
+              <Route path="/customers/:id" element={<CustomerForm />} />
             </Route>
+
+            {/* Public List Routes */}
             <Route path="/movies" element={<Movies user={user} />} />
-            <Route path="/customers" element={<Customers />} />
+            <Route path="/customers" element={<Customers user={user} />} />
             <Route path="/rentals" element={<Rentals />} />
             <Route path="/not-found" element={<NotFound />} />
             <Route path="/" element={<Navigate to="/movies" />} />
